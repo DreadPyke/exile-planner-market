@@ -4,7 +4,9 @@ name: Market snapshot
 
 on:
   schedule:
-    - cron: '23 * * * *' # hourly; poe.ninja refreshes PoE2 prices about once an hour
+    # Twice an hour: GitHub runs scheduled jobs on a best-effort basis and sometimes skips or delays one,
+    # so the second run covers it. poe.ninja refreshes PoE2 prices about once an hour.
+    - cron: '13,43 * * * *'
   workflow_dispatch: # "Run workflow" button for a manual refresh
 
 permissions:
