@@ -10,7 +10,7 @@ import path from 'node:path';
 
 const BASE = 'https://poe.ninja/poe2/api/economy';
 // poe.ninja asks for a User-Agent that names the app and a contact.
-const UA = process.env.MARKET_USER_AGENT || 'ExilePlanner/0.1 (contact: sherazproductions@gmail.com)';
+const UA = process.env.MARKET_USER_AGENT || 'ExilePlanner-market/1.0';
 const outArg = process.argv.indexOf('--out');
 const OUT = path.resolve(outArg > 0 ? process.argv[outArg + 1] : 'public/data/market');
 const EXCHANGE = ['Currency', 'Fragments', 'Abyss', 'UncutGems', 'LineageSupportGems', 'Essences', 'SoulCores', 'Idols', 'Runes', 'Ritual', 'Expedition', 'Delirium', 'Breach', 'Verisium'];
