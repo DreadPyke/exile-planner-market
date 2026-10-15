@@ -34,7 +34,7 @@ jobs:
           MARKET_USER_AGENT: ExilePlanner-market/1.0 (+https://github.com/${{ github.repository }})
         run: |
           node update-market.mjs --out site/market
-          cp index.html site/index.html
+          cp index.html privacy.html site/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
