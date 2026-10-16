@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Exile Planner – shared build</title>
+<meta name="robots" content="noindex">
+<style>
+  :root { color-scheme: dark; }
+  body { margin: 0; min-height: 100vh; display: grid; place-items: center; background: radial-gradient(ellipse 80% 40% at 50% 0%, rgba(120, 80, 220, 0.18), transparent 70%), #07060a; color: #ddd6ea; font: 16px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { width: min(440px, calc(100% - 32px)); padding: 28px 22px; border-radius: 20px; border: 1px solid rgba(181, 140, 255, 0.35); background: #0e0b14; text-align: center; box-shadow: 0 0 60px -20px rgba(155, 107, 255, 0.6); }
+  .kicker { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: #b79bff; }
+  h1 { margin: 6px 0 4px; font-size: 1.6rem; color: #fff; word-break: break-word; }
+  .meta { color: #a59cb8; margin: 0 0 20px; }
+  .btn { display: block; margin: 10px 0 0; padding: 14px; border-radius: 14px; font-weight: 700; text-decoration: none; }
+  .primary { background: linear-gradient(180deg, #a87cff, #7a45ef); color: #fff; }
+  .ghost { border: 1px solid rgba(181, 140, 255, 0.4); color: #e6dcff; }
+  .small { margin-top: 16px; font-size: 0.8rem; color: #8e869e; }
+  .hidden { display: none; }
+</style>
+</head>
+<body>
+<main>
+  <div class="kicker">Shared build · Exile Planner</div>
+  <h1 id="name">Path of Exile 2 build</h1>
+  <p class="meta" id="meta">Open it in the Exile Planner app to view and save it.</p>
+  <a class="btn primary hidden" id="open" href="#">Open in Exile Planner</a>
+  <a class="btn ghost" id="play" href="https://play.google.com/store/apps/details?id=com.dreadpyke.exileplanner">Get Exile Planner on Google Play</a>
+  <p class="small" id="note">Exile Planner is a free, unofficial Path of Exile 2 build planner for Android.</p>
+</main>
+<script>
+  // The build is in the link after '#', so it never reaches a server. It's the same code the app uses:
+  // the build as JSON, compressed (deflate-raw) and base64url-encoded.
+  const code = location.hash.slice(1).replace(/[^A-Za-z0-9_-]/g, '');
+  const play = document.getElementById('play').href;
+  const NAMES = { Witch: 'Witch', Ranger: 'Ranger', Warrior: 'Warrior', Sorceress: 'Sorceress', Huntress: 'Huntress', Mercenary: 'Mercenary', Monk: 'Monk', Druid: 'Druid' };
+  if (!code) {
+    document.getElementById('meta').textContent = 'This link has no build in it.';
+  } else {
+    if (/Android/i.test(navigator.userAgent)) {
+      const open = document.getElementById('open');
+      open.href = 'intent://share/' + code + '#Intent;scheme=exileplanner;package=com.dreadpyke.exileplanner;S.browser_fallback_url=' + encodeURIComponent(play) + ';end';
+      open.classList.remove('hidden');
+    } else {
+      document.getElementById('note').textContent = 'Open this link on an Android phone with Exile Planner installed to view and save the build.';
+    }
+    (async () => {
+      try {
+        const b64 = code.replace(/-/g, '+').replace(/_/g, '/');
+        const bytes = Uint8Array.from(atob(b64 + '='.repeat((4 - (b64.length % 4)) % 4)), (c) => c.charCodeAt(0));
+        const text = await new Response(new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'))).text();
+        const b = JSON.parse(text);
+        document.getElementById('name').textContent = b.name || 'Path of Exile 2 build';
+        document.title = (b.name || 'Shared build') + ' – Exile Planner';
+        const parts = [NAMES[b.className] || b.className, (b.skills || []).length + ' skills', Object.keys(b.gear || {}).length + ' items'];
+        document.getElementById('meta').textContent = parts.filter(Boolean).join(' · ');
+      } catch {
+        document.getElementById('meta').textContent = "This link may have been cut off when it was copied.";
+      }
+    })();
+  }
+</script>
+</body>
+</html>

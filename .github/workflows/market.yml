@@ -35,6 +35,7 @@ jobs:
         run: |
           node update-market.mjs --out site/market
           cp index.html privacy.html site/
+          cp -r b site/
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
